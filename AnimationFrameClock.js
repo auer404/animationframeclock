@@ -3,7 +3,7 @@ class AnimationFrameClock {
     default_options = {
         auto_start: true,
         frame_rate: false,
-        interval: 1000,
+        interval: 0,
         on_tick: function () { },
         on_request: function () { },
         on_start: function() { },

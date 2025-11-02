@@ -3,8 +3,9 @@ class AnimationFrameClock {
     default_options = {
         auto_start: true,
         frame_rate: false,
-        interval: 0,
-        on_tick: function () { },
+        interval: 1,
+        cycle_limit: 0,
+        on_interval: function () { },
         on_request: function () { },
         on_start: function() { },
         on_stop: function() { }
@@ -32,15 +33,21 @@ class AnimationFrameClock {
             this.interval = options.interval;
         }
 
+        if (this.interval < 1) {
+            this.interval = 1;
+        }
+
+        this.cycle_limit = options.cycle_limit;
+
         this.on_start = options.on_start;
         this.on_stop = options.on_stop;
 
         this.on_request = options.on_request;
 
-        this.on_tick = options.on_tick;
+        this.on_interval = options.on_interval;
 
         if (options[0] && typeof options[0] == "function") {
-            this.on_tick = options[0];
+            this.on_interval = options[0];
         }
 
         if (options[1] && typeof options[1] == "number") {
@@ -77,6 +84,7 @@ class AnimationFrameClock {
     reset_status() {
         this.active = false;
         this.elapsed_total = 0;
+        this.cycles = 0;
         this.prev_ts = undefined;
     }
 
@@ -86,6 +94,10 @@ class AnimationFrameClock {
         } else {
             this.start();
         }
+    }
+
+    cycle_limit_reached() {
+        return this.cycle_limit > 0 && this.cycles >= this.cycle_limit;
     }
 
     evolve(ts) {
@@ -103,11 +115,17 @@ class AnimationFrameClock {
 
         this.on_request();
 
-        while (this.elapsed_total >= this.interval) {
+        while (this.elapsed_total >= this.interval && !this.cycle_limit_reached()) {
             this.elapsed_total -= this.interval;
-            this.on_tick();
+            this.on_interval();
+            this.cycles++;
         }
 
-        this.request = window.requestAnimationFrame(this.evolve);
+        if (!this.cycle_limit_reached()) {
+            this.request = window.requestAnimationFrame(this.evolve);
+        } else {
+            this.stop();
+        }
+
     }
 }

@@ -1,6 +1,12 @@
 # AnimationFrameClock
 A simple JS class to simplify `requestAnimationFrame` handling.
 
+### Remote script link :
+
+`<script src="https://auer404.github.io/animationframeclock/AnimationFrameClock.js"></script>`
+
+---
+
 ### Using `setInterval`-like syntax :
 
 `const AFC = new AnimationFrameClock( callback_function , interval_in_milliseconds );`
@@ -30,7 +36,7 @@ A simple JS class to simplify `requestAnimationFrame` handling.
 - `on_stop` (callback function) - will trigger at every `stop()` method call
 - `on_request` (callback function) - will trigger at every internal Animation Frame request
 
-#### Methods :
+#### Available methods :
 
 - `start()`
 - `stop()`
